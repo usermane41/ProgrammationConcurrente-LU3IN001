@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.Arrays;
 
 
-public class Lance implements Runnable{
+public class WordcountWorker implements Runnable{
 	private String nom;
 	private int i;
 	int [] wordCount;
-	public Lance (String nom,int [] wordCount, int i) {
+	public WordcountWorker (String nom,int [] wordCount, int i) {
 		this.nom=nom;
 		this.wordCount= wordCount;
 		this.i = i;
@@ -23,7 +23,6 @@ public class Lance implements Runnable{
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Word count "+i +":" + Arrays.toString(wordCount));
 		
 	}
 }

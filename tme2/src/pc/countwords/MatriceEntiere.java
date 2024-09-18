@@ -140,7 +140,7 @@ public class MatriceEntiere{
 		MatriceEntiere res=new MatriceEntiere(nbLignes(), nbColonnes());
 		Thread[] ttab = new Thread[res.nbLignes()];
 		for(int i=0; i<nbLignes(); i++) {
-			LanceMt m = new LanceMt(res,i,n);
+			LanceMt m = new LanceMt(this,res,i,n);
 			Thread t = new Thread(m);
 			ttab[i]=t;
 			t.start();
@@ -174,26 +174,26 @@ public class MatriceEntiere{
             throw new TaillesNonConcordantesException("les matrices ne font pas la meme taille");
         }
         MatriceEntiere res = new MatriceEntiere(nbLignes(), m.nbColonnes());
-        Thread[] ttab = new Thread[res.nbLignes()*res.nbColonnes()];
-        int cpt=0;
+        Thread[][] ttab = new Thread[res.nbLignes()][res.nbColonnes()];
         for(int i=0; i<nbLignes();i++){
             for(int j=0; j<m.nbColonnes();j++){
-            	Lancecell cl = new Lancecell(res,i,j,m);
+            	Lancecell cl = new Lancecell(res,this,i,j,m);
     			Thread t = new Thread(cl);
-    			ttab[cpt] = t;
-    			cpt++;
+    			ttab[i][j] = t;
     			t.start();
             }
         }
-        for(Thread tk : ttab) {
-			try {
-				tk.join();
+        for(int i=0; i<nbLignes();i++){
+            for(int j=0; j<m.nbColonnes();j++){
+            	try {
+            		ttab[i][j].join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+        }
         return res;
     }
+        
     
-
 }

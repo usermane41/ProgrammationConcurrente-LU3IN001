@@ -24,7 +24,7 @@ public class WordCount {
 		int [] wordCount = new int[args.length];
 		Thread[] threads = new Thread[args.length];
 		for (int i = 0; i < args.length; i++) {
-			Lance c1= new Lance(args[i],wordCount,i);
+			WordcountWorker c1= new WordcountWorker(args[i],wordCount,i);
 			Thread t1 = new Thread(c1);
 			threads[i]=t1;
 			t1.start();
@@ -45,7 +45,7 @@ public class WordCount {
 				e.printStackTrace();
 			}
 		}
-		
+		System.out.println("Word count:" + Arrays.toString(wordCount));
 		int total = 0;
 		for (int count : wordCount) {
 			total += count;
