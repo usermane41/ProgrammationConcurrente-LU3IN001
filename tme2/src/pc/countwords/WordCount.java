@@ -22,8 +22,14 @@ public class WordCount {
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
 		int [] wordCount = new int[args.length];
+		Thread[] threads = new Thread[args.length];
 		for (int i = 0; i < args.length; i++) {
-			try {
+			Lance c1= new Lance(args[i],wordCount,i);
+			Thread t1 = new Thread(c1);
+			threads[i]=t1;
+			t1.start();
+		}
+			/*try {
 				wordCount[i] = countWords(args[i]);
 			} catch (IOException e) {
 				System.err.println("Error reading file: " + args[i]);
@@ -31,11 +37,22 @@ public class WordCount {
 			}
 		}
 		System.out.println("Word count:" + Arrays.toString(wordCount));
+		*/
+		for (Thread t: threads) {
+			try {
+				t.join();
+			}catch(InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		int total = 0;
 		for (int count : wordCount) {
 			total += count;
 		}
 		System.out.println("Total word count:" + total);
+		
+		
 		System.out.println("Total time "+(System.currentTimeMillis()-startTime) + " ms");
 	}
 }

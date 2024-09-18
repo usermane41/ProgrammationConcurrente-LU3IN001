@@ -1,12 +1,14 @@
 
-package pc;
+package pc.countwords;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
 
-public class MatriceEntiere {
+
+
+public class MatriceEntiere{
     private int[][] mat;
 
     public MatriceEntiere(int lig, int col){
@@ -133,7 +135,27 @@ public class MatriceEntiere {
 		}
 		return res;
 	}
-
+    
+    public MatriceEntiere produitParScalaireMT(int n) {
+		MatriceEntiere res=new MatriceEntiere(nbLignes(), nbColonnes());
+		Thread[] ttab = new Thread[res.nbLignes()];
+		for(int i=0; i<nbLignes(); i++) {
+			LanceMt m = new LanceMt(res,i,n);
+			Thread t = new Thread(m);
+			ttab[i]=t;
+			t.start();
+			
+		}
+		for(Thread tk : ttab) {
+			try {
+				tk.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return res;
+	}
+    
     public MatriceEntiere transposee(){
         MatriceEntiere res= new MatriceEntiere(nbColonnes(),nbLignes());
         for(int i=0; i<nbLignes();i++){
@@ -145,5 +167,33 @@ public class MatriceEntiere {
 
         return res;
     }
+    
+    
+    public MatriceEntiere produitMt(MatriceEntiere m)throws TaillesNonConcordantesException{
+        if ((nbColonnes() != m.nbLignes())){
+            throw new TaillesNonConcordantesException("les matrices ne font pas la meme taille");
+        }
+        MatriceEntiere res = new MatriceEntiere(nbLignes(), m.nbColonnes());
+        Thread[] ttab = new Thread[res.nbLignes()*res.nbColonnes()];
+        int cpt=0;
+        for(int i=0; i<nbLignes();i++){
+            for(int j=0; j<m.nbColonnes();j++){
+            	Lancecell cl = new Lancecell(res,i,j,m);
+    			Thread t = new Thread(cl);
+    			ttab[cpt] = t;
+    			cpt++;
+    			t.start();
+            }
+        }
+        for(Thread tk : ttab) {
+			try {
+				tk.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+        return res;
+    }
+    
 
 }
