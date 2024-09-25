@@ -52,7 +52,8 @@ public class TestList {
 		List<Thread> threads = new ArrayList<>();
 
 		// Create threads to add elements to the list
-
+		
+		}
 		// Create threads to check contains for non-existent elements
 
 		// Start all threads
@@ -67,7 +68,7 @@ public class TestList {
 	}
 
 	// TODO support pour les threads
-	static class AddTask implements Runnable {
+	class AddTask implements Runnable {
 
 		@Override
 		public void run() {
