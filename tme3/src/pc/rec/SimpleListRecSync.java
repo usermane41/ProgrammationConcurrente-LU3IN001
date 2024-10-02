@@ -2,7 +2,7 @@ package pc.rec;
 
 import pc.IList;
 
-public class SimpleListRec<T> implements IList<T> {
+public class SimpleListRecSync<T> implements IList<T> {
 	private Chainon<T> head; // Premier élément de la liste
 
 	private static class Chainon<T> {
@@ -14,7 +14,7 @@ public class SimpleListRec<T> implements IList<T> {
 			// NB : next est null par défaut
 		}
 
-		public int size() {
+		public synchronized int size() {
 			if (next == null) {
 				return 1;
 			} else {
@@ -22,7 +22,7 @@ public class SimpleListRec<T> implements IList<T> {
 			}
 		}
 
-		public boolean contains(T element) {
+		public synchronized boolean contains(T element) {
 			if (data.equals(element)) {
 				return true;
 			} else if (next == null) {
@@ -32,7 +32,7 @@ public class SimpleListRec<T> implements IList<T> {
 			}
 		}
 
-		public void add(T element) {
+		public synchronized void add(T element) {
 			if (next == null) {
 				next = new Chainon<>(element);
 			} else {
@@ -42,11 +42,11 @@ public class SimpleListRec<T> implements IList<T> {
 
 	}
 
-	public void clear() {
+	public synchronized void clear() {
         head = null;
     }
 
-	public int size() {
+	public synchronized int size() {
 		if (head == null) {
 			return 0;
 		} else {
@@ -54,7 +54,7 @@ public class SimpleListRec<T> implements IList<T> {
 		}
 	}
 
-	public boolean contains(T element) {
+	public synchronized boolean contains(T element) {
 		if (head == null) {
 			return false;
 		} else {
@@ -62,7 +62,7 @@ public class SimpleListRec<T> implements IList<T> {
 		}
 	}
 
-	public void add(T element) {
+	public synchronized void add(T element) {
 		if (head == null) {
 			head = new Chainon<>(element);
 		} else {

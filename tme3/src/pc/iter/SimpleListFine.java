@@ -1,11 +1,12 @@
 package pc.iter;
 
 import pc.IList;
+import pc.iter.SimpleList.Chainon;
 
-public class SimpleList<T> implements IList<T>{
+public class SimpleListFine<T> implements IList<T>{
 	private Chainon<T> head; // Premier élément de la liste
 
-	public static class Chainon<T> {
+	private static class Chainon<T> {
 		T data; // Donnée du chaînon
 		Chainon<T> next; // Référence au chaînon suivant
 
@@ -16,7 +17,7 @@ public class SimpleList<T> implements IList<T>{
 
 	}
 
-	public SimpleList() {
+	public SimpleListFine() {
 		head = null;
 	}
 
@@ -25,8 +26,10 @@ public class SimpleList<T> implements IList<T>{
 		int size = 0;
 		Chainon<T> cur = head;
 		while (cur != null) {
-			size++;
-			cur = cur.next;
+			synchronized (cur) {
+				size++;
+				cur = cur.next;
+			}
 		}
 		return size;
 	}
@@ -37,26 +40,44 @@ public class SimpleList<T> implements IList<T>{
 			head = new Chainon<>(element);
 			return;
 		}
-		for (Chainon<T> cur = head; cur != null; cur = cur.next) {
-			if (cur.next == null) {
-				cur.next = new Chainon<>(element);
-				break;
+		Chainon<T> cur;
+
+		synchronized (this) {
+		        cur = head;
+		}
+		while(cur!= null){
+			synchronized(cur) {
+				if (cur.next == null) {
+					cur.next = new Chainon<>(element);
+					break;
+				}
+				cur=cur.next;
 			}
 		}
 	}
 
 	@Override
 	public boolean contains(T element) {
-		for (Chainon<T> cur = head; cur != null; cur = cur.next) {
-			if (cur.data.equals(element)) {
-				return true;
-			}
-		}
-		return false;
+	    Chainon<T> cur;
+
+	    synchronized (this) {
+	        cur = head;
+	    }
+
+	    while (cur != null) {
+	        synchronized (cur) {
+	            if (cur.data.equals(element)) {
+	                return true;
+	            }
+	        }
+	        cur = cur.next;
+	    }
+
+	    return false;
 	}
 
 	@Override
-	public void clear() {
+	public synchronized void clear() {
 		head = null;
 		// NB : grace au gc, les éléments de la liste sont supprimés
 		// dans d'autres langages, il faudrait les supprimer un par un (e.g. C++)

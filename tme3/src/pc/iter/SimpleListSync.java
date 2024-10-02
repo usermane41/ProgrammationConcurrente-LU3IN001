@@ -2,10 +2,10 @@ package pc.iter;
 
 import pc.IList;
 
-public class SimpleList<T> implements IList<T>{
+public class SimpleListSync<T> implements IList<T>{
 	private Chainon<T> head; // Premier élément de la liste
 
-	public static class Chainon<T> {
+	private static class Chainon<T> {
 		T data; // Donnée du chaînon
 		Chainon<T> next; // Référence au chaînon suivant
 
@@ -16,12 +16,12 @@ public class SimpleList<T> implements IList<T>{
 
 	}
 
-	public SimpleList() {
+	public SimpleListSync() {
 		head = null;
 	}
 
 	@Override
-	public int size() {
+	public synchronized int size() {
 		int size = 0;
 		Chainon<T> cur = head;
 		while (cur != null) {
@@ -32,7 +32,7 @@ public class SimpleList<T> implements IList<T>{
 	}
 
 	@Override
-	public void add(T element) {
+	public synchronized void add(T element) {
 		if (head == null) {
 			head = new Chainon<>(element);
 			return;
@@ -46,7 +46,7 @@ public class SimpleList<T> implements IList<T>{
 	}
 
 	@Override
-	public boolean contains(T element) {
+	public synchronized boolean contains(T element) {
 		for (Chainon<T> cur = head; cur != null; cur = cur.next) {
 			if (cur.data.equals(element)) {
 				return true;
@@ -56,7 +56,7 @@ public class SimpleList<T> implements IList<T>{
 	}
 
 	@Override
-	public void clear() {
+	public synchronized void clear() {
 		head = null;
 		// NB : grace au gc, les éléments de la liste sont supprimés
 		// dans d'autres langages, il faudrait les supprimer un par un (e.g. C++)

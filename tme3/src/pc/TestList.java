@@ -10,12 +10,16 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import pc.iter.SimpleList;
+import pc.iter.SimpleListFine;
+import pc.iter.SimpleListSync;
 import pc.rec.SimpleListRec;
+import pc.rec.SimpleListRecFine;
+import pc.rec.SimpleListRecSync;
 
 public class TestList {
 
 	@Test
-	public void testSimpleList() {
+	/*public void testSimpleList() {
 		IList<String> list = new SimpleList<>();
 
 		runConcurrentTest(list, 10, 1000);
@@ -28,6 +32,30 @@ public class TestList {
 		runConcurrentTest(list, 10, 1000);
 	}
 
+	public void testSimpleListRecSync() {
+		IList<String> list = new SimpleListRecSync<>();
+
+		runConcurrentTest(list, 10, 1000);
+	}
+	
+	public void testSimpleListSync() {
+		IList<String> list = new SimpleListSync<>();
+
+		runConcurrentTest(list, 10, 1000);
+	}
+	
+	public void testSimpleListFine() {
+		IList<String> list = new SimpleListFine<>();
+
+		runConcurrentTest(list, 10, 1000);
+	}*/
+
+	public void testSimpleListRecFine() {
+		IList<String> list = new SimpleListRecFine<>();
+
+		runConcurrentTest(list, 10, 1000);
+	}
+	
 	public static void testList(IList<String> list) {
 		// Tests des versions itératives
 		list.add("Hello");
@@ -50,28 +78,68 @@ public class TestList {
 		long startTime = System.currentTimeMillis();
 
 		List<Thread> threads = new ArrayList<>();
-
-		// Create threads to add elements to the list
+		List<String> lvalue = new ArrayList<>();
 		
+		for(int i=0;i<M;i++) {
+			lvalue.add("abc"+i);
+		}
+		// Create threads to add elements to the list
+		for (int i=0; i<N;i++) {
+			Thread t = new Thread(new AddTask(list,lvalue));
+			threads.add(t);
+			t.start();
 		}
 		// Create threads to check contains for non-existent elements
-
+		for (int i=0; i<N;i++) {
+			Thread t = new Thread(new ContainsTask(list,lvalue));
+			threads.add(t);
+			t.start();
+		}
+		
 		// Start all threads
-
 		// Wait for all threads to finish
-
+		for(Thread thread : threads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		// Check that the list size is N * M
-		// assertEquals("List size should be N * M", N * M, list.size());
+		assertEquals("List size should be N * M", N * M, list.size());
 
 		long endTime = System.currentTimeMillis();
 		System.out.println("Test completed in " + (endTime - startTime) + " milliseconds");
 	}
 
 	// TODO support pour les threads
-	class AddTask implements Runnable {
-
+	static class AddTask implements Runnable {
+		private IList<String> list;
+		private List<String> value;
+		public AddTask(IList<String> list, List<String> value) {
+			this.list=list;
+			this.value=value;
+		}
 		@Override
 		public void run() {
+			for(String s : value) {
+				list.add(s);
+			}
+		}
+	}
+	
+	static class ContainsTask implements Runnable {
+		private IList<String> list;
+		private List<String> value;
+		public ContainsTask(IList<String> list, List<String> value) {
+			this.list=list;
+			this.value=value;
+		}
+		@Override
+		public void run() {
+			for(String s : value) {
+				list.contains(s);
+			}
 		}
 	}
 
