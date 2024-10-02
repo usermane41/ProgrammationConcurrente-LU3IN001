@@ -10,8 +10,15 @@ public class Philosopher implements Runnable {
 	}
 
 	public void run() {
-		// TODO
-		
+		while(!Thread.interrupted()) {
+			think();
+			left.acquire();
+			right.acquire();
+			eat();
+			own();
+			left.release();
+			right.release();
+		}
 		// System.out.println(Thread.currentThread().getName() + " has one fork");
 	}
 
@@ -21,5 +28,8 @@ public class Philosopher implements Runnable {
 
 	private void think() {
 		System.out.println(Thread.currentThread().getName() + " is thinking");
+	}
+	private void own() {
+		System.out.println(Thread.currentThread().getName() + " possede une baguette");
 	}
 }

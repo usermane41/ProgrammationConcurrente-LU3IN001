@@ -1,13 +1,13 @@
 package pc.philo;
-
-public class Fork {
-	
+import java.util.concurrent.locks.*;
+public class Fork{
+	private ReentrantLock l = new ReentrantLock();
 	public void acquire () {
-		// TODO
+	l.lock();	
     }
 	
 	
 	public void release () {
-		// TODO
+		l.unlock();
 	}
 }
