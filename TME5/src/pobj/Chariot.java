@@ -18,9 +18,10 @@ public class Chariot {
 		poids=0;
 	}
 	
-	public synchronized void charge(AleaObjet o)  {
-		while(!ischargeturn || o.getPoids()+poids>(poidsMax) || ch.size()>=nbMax ) {
+	public synchronized void charge(AleaObjet o,AleaStock cstock)  {
+		while(!ischargeturn && o.getPoids()+poids>(poidsMax) && ch.size()==nbMax) {
 			try {
+				System.out.println("-Charge va attendre.");
 				wait();
 			}catch(InterruptedException e) {
 				e.printStackTrace();
@@ -28,8 +29,9 @@ public class Chariot {
 			
 		}
 		poids+=o.getPoids();
+		System.out.println("Travaille chargeur");
 		ch.add(o);
-		if((poids>=(poidsMax)) || (ch.size()>=nbMax)) {
+		if((ch.size()==nbMax) || cstock.isEmpty() ) {
 			ischargeturn=false;
 			notifyAll();
 		}
@@ -38,11 +40,13 @@ public class Chariot {
 	public synchronized void decharge() {
 		while(ischargeturn) {
 			try {
+				System.out.println("-Decharge va attendre.");
 				wait();
 			}catch(InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("En train de Decharge");
 		AleaObjet o = ch.remove(ch.size()-1);
 		poids-=o.getPoids();
 		if(ch.size()==0) {

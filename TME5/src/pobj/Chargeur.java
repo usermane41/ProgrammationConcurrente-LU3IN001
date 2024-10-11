@@ -12,7 +12,7 @@ public class Chargeur implements Runnable {
 		while(true){
 			AleaObjet o=cstock.getObjet();
 			if(o==null) break;
-			ch.charge(o);
+			ch.charge(o,cstock);
 		}
 		
 	}

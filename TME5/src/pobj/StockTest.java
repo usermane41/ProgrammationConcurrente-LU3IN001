@@ -5,7 +5,7 @@ import java.util.List;
 
 public class StockTest {
 	public static void main(String[] args) {
-		AleaStock s= new AleaStock(10);
+		AleaStock s= new AleaStock(30);
 		Chariot ch= new Chariot(1000,20);
 		
 		Chargeur c1 = new Chargeur(s,ch);
@@ -22,8 +22,8 @@ public class StockTest {
 		exe.add(n3);
 		
 		n1.start();
-		n2.start();
 		n3.start();
+		n2.start();
 
 		
 		for(Thread t: exe) {

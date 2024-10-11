@@ -13,6 +13,7 @@ public class Dechargeur implements Runnable {
 	public void run() {
 		while (true) {
 			if(cstock.isEmpty() && ch.isEmpty()){
+				System.out.println("dechargeur s'arrete");
 				break;
 			}
 			ch.decharge();
