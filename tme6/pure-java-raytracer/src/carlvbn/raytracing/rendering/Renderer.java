@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Renderer {
     private static final float GLOBAL_ILLUMINATION = 0.3F;
@@ -22,6 +24,7 @@ public class Renderer {
     private static final boolean SHOW_SKYBOX = true;
     private static ThreadPool tp = null;
     private static CountDownLatch lt;
+    private static ExecutorService exec = Executors.newFixedThreadPool(8);
 
     public static float bloomIntensity = 0.5F;
     public static int bloomRadius = 10;
@@ -170,11 +173,10 @@ public class Renderer {
     }
     
     public static void renderScene(Scene scene, Graphics gfx, int width, int height, float resolution) {
-        int blockSize = (int) (1 / 0.1f);
+        int blockSize = (int) (1 / resolution);
         long start = System.currentTimeMillis();
-        tp= new ThreadPool(width,8);
         lt= new CountDownLatch(width/blockSize);
-        
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
         for (int x = 0; x<width; x+=blockSize) {
         	final int  xx = x;
@@ -184,28 +186,24 @@ public class Renderer {
 					for (int y = 0; y<height; y+=blockSize) {
 	                	float[] uv = getNormalizedScreenCoordinates(xx, y, width, height);
 	                	PixelData pixelData = computePixelInfo(scene, uv[0], uv[1]);
+	                	fillColorRect( image,  xx,  y, blockSize ,  blockSize, pixelData.getColor() );
 	                	
-	                	synchronized(gfx) {
+	                	/*synchronized(gfx) {
 	                		gfx.setColor(pixelData.getColor().toAWTColor());
 	                    	gfx.fillRect(xx, y, blockSize, blockSize);
-	                	}
+	                	}*/
 	            	}
 					lt.countDown();
 					
 				}};
-				try {
-					tp.submit(run);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				exec.submit(run);
 	        }
         try {
 			lt.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-        
-
+        gfx.drawImage(image, 0, 0, null);
         System.out.println("Rendered in " + (System.currentTimeMillis() - start) + "ms");
     }
 
