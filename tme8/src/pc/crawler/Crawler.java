@@ -29,13 +29,15 @@ public class Crawler implements Runnable{
 			//TaskData task;
 			try {
 				TaskData task = queue.take();
-				if(task == TaskData.POISON) break;
-				if(!(task.getProf()==0)) {
-					List<String> lS = WebCrawlerUtils.processUrl(task.getUrl(), baseUrl, outputDir);
+				if(task == TaskData.POISON) {
+					act.taskCompleted();
+					break;
+				}
+				List<String> lS = WebCrawlerUtils.processUrl(task.getUrl(), baseUrl, outputDir);
+				if(task.getProf()>0) {
 					for(String s : lS) {
-						if(!set.containsKey(s)) {
+						if(set.putIfAbsent(s, true)==null) {
 							act.taskStarted();
-							set.put(s, true);
 							queue.add(new TaskData(s, task.getProf()-1));
 							System.out.println("queue size="+queue.size());
 						}

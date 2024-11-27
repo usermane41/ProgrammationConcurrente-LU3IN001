@@ -35,15 +35,16 @@ public class WebCrawlerParallel {
             }
             long start = System.currentTimeMillis();
             act.taskStarted();
-            queue.add(new TaskData(baseUrl, 4));
+            set.put(baseUrl, true);
+            queue.add(new TaskData(baseUrl, 2));
             
             for(int i=0; i<8; i++) {
             	pool.submit(new Crawler(set, queue, outputDir, baseUrl, act));
             }
-            
+            //act.taskCompleted();
             act.awaitCompletion();
             
-            for(int i=0; i<15; i++) {
+            for(int i=0; i<8; i++) {
             	queue.add(TaskData.POISON);
             }
             pool.shutdown();

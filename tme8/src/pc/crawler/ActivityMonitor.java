@@ -18,7 +18,7 @@ public class ActivityMonitor {
 		int c =cpt.decrementAndGet();
 		System.out.println(c);
 		if(c==0) {
-			notifyAll();
+				notifyAll();
 		}
 	}
 	public synchronized void awaitCompletion() {
